@@ -1,0 +1,89 @@
+﻿@page "/notifications"
+@using NotificationService.Services
+@inject NotificationService NotifyService
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3>Notifications Dashboard</h3>
+        <span class="badge bg-info text-dark fs-6">Active Style: @NotifyService.CurrentStyle</span>
+    </div>
+
+    <div class="card p-3 mb-4 bg-light shadow-sm">
+        <div class="row align-items-center g-3">
+            <div class="col-auto">
+                <button class="btn btn-primary" @onclick="LoadNotifications">
+                    <i class="oi oi-reload"></i> Refresh Panel
+                </button>
+            </div>
+            <div class="col-auto d-flex align-items-center gap-2">
+                <label class="mb-0 text-nowrap">Override Count:</label>
+                <input type="number" class="form-control" style="width: 90px;" @bind="overrideCount" min="1" placeholder="Auto" />
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-outline-secondary" @onclick="ClearOverride">Clear Override</button>
+            </div>
+        </div>
+    </div>
+
+    @if (notifications == null)
+    {
+        <div class="text-center my-4">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2">Loading system alerts...</p>
+        </div>
+    }
+    else if (!notifications.Any())
+    {
+        <div class="alert alert-warning">No notifications found.</div>
+    }
+    else
+    {
+        <div class="list-group shadow-sm">
+            @foreach (var note in notifications)
+            {
+                if (NotifyService.CurrentStyle == "Compact")
+                {
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center border-start border-primary border-3 mb-1">
+                        <div>
+                            <i class="oi oi-bell me-2 text-primary"></i>
+                            <strong>@note.Title</strong>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">@note.Timestamp.ToShortTimeString()</span>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group-item list-group-item-action flex-column align-items-start border-start border-danger border-4 mb-3 rounded-end shadow-sm">
+                        <div class="d-flex w-100 justify-content-between mb-2">
+                            <h5 class="mb-1 text-danger fw-bold"><i class="oi oi-warning me-2"></i>@note.Title</h5>
+                            <small class="text-muted fw-italic">@note.Timestamp.ToString("g")</small>
+                        </div>
+                        <p class="mb-1 text-dark bg-white p-2 rounded border border-light">@note.Message</p>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<NotificationItem>? notifications;
+    private int? overrideCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadNotifications();
+    }
+
+    private async Task LoadNotifications()
+    {
+        // Agar overrideCount me value hogi to override karega, warna config ka default chalega
+        notifications = await NotifyService.GetNotificationsAsync(overrideCount);
+    }
+
+    private async Task ClearOverride()
+    {
+        overrideCount = null;
+        await LoadNotifications();
+    }
+}

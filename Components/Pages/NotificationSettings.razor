@@ -1,0 +1,31 @@
+﻿@page "/notification-settings"
+@using NotificationService.Services
+@inject NotificationConfig Config
+
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <h3 class="mb-0">Notification Settings</h3>
+        </div>
+        <div class="card-body">
+            <div class="mb-3">
+                <label class="form-label font-weight-bold">Default Number of Notifications:</label>
+                <input type="number" class="form-control" @bind-value="Config.DefaultNumberOfNotifications" min="1" max="20" />
+                <small class="text-muted">Set how many notifications load initially.</small>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label font-weight-bold">Notification Style:</label>
+                <select class="form-select" @bind="Config.NotificationStyle">
+                    <option value="Compact">Compact View</option>
+                    <option value="Detailed">Detailed View</option>
+                </select>
+                <small class="text-muted">Choose the UI layout mode.</small>
+            </div>
+
+            <div class="alert alert-success mt-3">
+                <i class="oi oi-info"></i> <strong>NotificationService Tip:</strong> Settings change globally instantly due to Singleton DI.
+            </div>
+        </div>
+    </div>
+</div>
