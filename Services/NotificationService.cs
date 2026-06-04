@@ -1,29 +1,19 @@
 ﻿
-
 namespace NotificationService.Services
 {
     public class NotificationService
     {
         private readonly NotificationConfig _config;
-
-        // Dependency Injection ke zariye config class receive ho rahi hai
         public NotificationService(NotificationConfig config)
         {
             _config = config;
         }
-
         public string CurrentStyle => _config.NotificationStyle;
-
         public async Task<List<NotificationItem>> GetNotificationsAsync(int? numberOfNotifications = null)
         {
-            // Simulate network delay
             await Task.Delay(100);
-
-            // Agar user ne input nahi diya (null hai), toh default config uthayega
             int count = numberOfNotifications ?? _config.DefaultNumberOfNotifications;
-
             var notifications = new List<NotificationItem>();
-
             for (int i = 1; i <= count; i++)
             {
                 notifications.Add(new NotificationItem
@@ -34,11 +24,9 @@ namespace NotificationService.Services
                     Timestamp = DateTime.Now.AddMinutes(-i * 20)
                 });
             }
-
             return notifications;
         }
     }
-
     public class NotificationItem
     {
         public int Id { get; set; }
